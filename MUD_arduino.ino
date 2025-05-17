@@ -4,11 +4,11 @@
 #include <Wire.h>
 
 // WiFi 
-const char* ssid = "Aaron iPhone";
-const char* password = "youareaperson1";
+const char* ssid = "";
+const char* password = "";
 
 // Your GCP Info
-const char* serverIP = "34.168.132.202";
+const char* serverIP = "34.94.91.89";
 const int serverPort = 8888;
 WiFiClient client;
 
@@ -75,7 +75,7 @@ void tcpReconnect() {
 // MQTT reconnect
 void mqttReconnect() {
   while (!mqttClient.connected()) {
-    Serial.println("Attempting to connect to MQTT");
+    Serial.print("Attempting to connect to MQTT");
     if (mqttClient.connect("ESP32Client")) {
       Serial.println("Connected to MQTT");
       mqttClient.subscribe(mqttTopic);
@@ -88,6 +88,7 @@ void mqttReconnect() {
   }
 }
 
+// Receives messages from MQTT
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
   char msg[257];
   length = min(length, sizeof(msg) - 1);
