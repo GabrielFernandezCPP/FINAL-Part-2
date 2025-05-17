@@ -120,7 +120,7 @@ void sendMove(int pin, const char* label, const char* msg) {
   if (digitalRead(pin) == LOW) {
     Serial.println(label);
     if (connected) {
-      client.println(msg);
+      client.print(msg);
     } else {
       Serial.println("Not connected to TCP");
     }
