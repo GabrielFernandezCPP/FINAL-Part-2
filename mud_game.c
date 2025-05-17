@@ -263,8 +263,6 @@ int main() {
         // Strip newline or carriage return if present
         input[strcspn(input, "\r\n")] = '\0';
 
-        sleep(1);
-
         // Get the opposite direction to enable backtracking
         const char *back = opposite_direction(input);
 
