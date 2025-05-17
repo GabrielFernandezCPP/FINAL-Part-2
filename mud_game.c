@@ -11,7 +11,7 @@
 #include <netinet/in.h>
 
 #define MAX_HISTORY 100
-#define START_DIR "/home/andywu2/mud_project/NicholasTranRooms/east" 
+#define START_DIR "/home/andywu2/mud_project/new_map/east" 
 #define DESCRIPTION_FILE "des.txt"
 #define ITEM_FILE "item.txt"
 #define PORT 8888
@@ -103,6 +103,8 @@ typedef struct {
 RoomState *history[MAX_HISTORY];
 int history_top = -1;
 
+char command[512];
+
 // List all directories in the current room
 // If debug is 1, show all entries; if 0, show only directories
 void list_directory(const char *path, int debug) {
@@ -154,7 +156,6 @@ int print_file_contents(const char *filename) {
 
         line[strcspn(line, "\n")] = '\0';
 
-        char command[512];
         snprintf(command, sizeof(command),
                  "mosquitto_pub -h %s -t %s -m \"%s\"",
                  BROKER, topic, line);
@@ -227,7 +228,7 @@ int main() {
         }
 
         // Clear the screen for a clean view (depends on OS)
-        clear_screen(OS_TYPE);
+        printf("\n");
 
         // If item.txt exists in the room, display its contents and end the game (e.g., player found the item)
         if (print_file_contents(ITEM_FILE) == 1) {
@@ -257,6 +258,7 @@ int main() {
             printf("ESP32 disconnected or error reading\n");
             break;
         }
+        printf("Received direction: '%s'\n", input);
 
         input[bytes_read] = '\0';  // Null-terminate the string
 
@@ -288,10 +290,14 @@ int main() {
             }
             free(prev->path);
             free(prev);
-        }
+        }   
         // Invalid direction input
         else {
-            printf("You bump into a wall. That direction doesn't go anywhere.\n"); // YOU CAN ALSO PUBLISH THIS TO MQTT
+            char invalid[128] = "You bump into a wall. That direction does not go anywhere.\n"; // YOU CAN ALSO PUBLISH THIS TO MQTT
+            snprintf(command, sizeof(command),
+                 "mosquitto_pub -h %s -t %s -m '%s'",
+                 BROKER, topic, invalid);
+            system(command);
         }
     }
     // Free up all memory used by the history stack
