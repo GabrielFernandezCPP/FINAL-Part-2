@@ -4,11 +4,11 @@
 #include <Wire.h>
 
 // WiFi 
-const char* ssid = "";
-const char* password = "";
+const char* ssid = "Aaron iPhone";
+const char* password = "youareaperson1";
 
 // Your GCP Info
-const char* serverIP = "34.94.91.89";
+const char* serverIP = "34.168.132.202";
 const int serverPort = 8888;
 WiFiClient client;
 
@@ -75,7 +75,7 @@ void tcpReconnect() {
 // MQTT reconnect
 void mqttReconnect() {
   while (!mqttClient.connected()) {
-    Serial.print("Attempting to connect to MQTT");
+    Serial.println("Attempting to connect to MQTT");
     if (mqttClient.connect("ESP32Client")) {
       Serial.println("Connected to MQTT");
       mqttClient.subscribe(mqttTopic);
@@ -88,18 +88,30 @@ void mqttReconnect() {
   }
 }
 
-// Receives messages from MQTT
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
   char msg[257];
   length = min(length, sizeof(msg) - 1);
   memcpy(msg, payload, length);
+  msg[length] = '\0';
 
   lcd.clear();
   lcd.setCursor(0, 0);
+  lcd.print("Room:");
 
-  lcd.print(msg);
-  delay(200);
-  lcd.autoscroll();
+  if (length <= 16) {
+    lcd.setCursor(0, 1);
+    lcd.print(msg);
+  } else {
+    for (int i = 0; i <= length - 16; i++) {
+      lcd.setCursor(0, 1);
+      lcd.print("                "); 
+      lcd.setCursor(0, 1);
+      for (int j = 0; j < 16; j++) {
+        lcd.print(msg[i + j]);
+      }
+      delay(300);
+    }
+  }
 }
 
 // Send moves to GCP through TCP connection
@@ -128,8 +140,8 @@ void loop() {
   }
   mqttClient.loop();
 
-  sendMove(BTN_NORTH, "NORTH", "N");
-  sendMove(BTN_SOUTH, "SOUTH", "S");
-  sendMove(BTN_EAST,  "EAST",  "E");
-  sendMove(BTN_WEST,  "WEST",  "W");
+  sendMove(BTN_NORTH, "NORTH", "north");
+  sendMove(BTN_SOUTH, "SOUTH", "south");
+  sendMove(BTN_EAST,  "EAST",  "east");
+  sendMove(BTN_WEST,  "WEST",  "west");
 }
