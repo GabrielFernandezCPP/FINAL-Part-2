@@ -140,8 +140,8 @@ void loop() {
   }
   mqttClient.loop();
 
-  sendMove(BTN_NORTH, "NORTH", "N");
-  sendMove(BTN_SOUTH, "SOUTH", "S");
-  sendMove(BTN_EAST,  "EAST",  "E");
-  sendMove(BTN_WEST,  "WEST",  "W");
+  sendMove(BTN_NORTH, "NORTH", "north");
+  sendMove(BTN_SOUTH, "SOUTH", "south");
+  sendMove(BTN_EAST,  "EAST",  "east");
+  sendMove(BTN_WEST,  "WEST",  "west");
 }
